@@ -16,7 +16,7 @@ def login():
         usuario = request.form["usuario"]
         contrasena = request.form["contrasena"]
         
-        # Conectarse a la base de datos para verificar credenciales
+        # Conexión a la base de datos
         conn = create_connection()
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM usuario WHERE nombre = %s AND contraseña = %s", (usuario, contrasena))
@@ -25,10 +25,9 @@ def login():
         # Si las credenciales son correctas, redirigir al panel de usuario
         if user:
             session["usuario"] = usuario
-            session["usuario_id"] = user[0]  # Almacena el ID del usuario en la sesión
+            session["usuario_id"] = user[0]
             return redirect(url_for("panel_usuario"))
         else:
-            # Si las credenciales no son válidas, mostrar mensaje de error
             error = "Usuario o contraseña incorrectos"
             return render_template("iniciar_sesion.html", error=error)
     
@@ -38,7 +37,6 @@ def login():
 @app.route("/panel_usuario")
 def panel_usuario():
     if "usuario" in session:
-        # Muestra el CRUD para pedidos, reclamos, etc.
         return render_template("panel_de_usuario.html", usuario=session["usuario"])
     else:
         return redirect(url_for("login"))
@@ -47,7 +45,7 @@ def panel_usuario():
 @app.route("/logout")
 def logout():
     session.pop("usuario", None)
-    session.pop("usuario_id", None)  # Limpia el ID del usuario de la sesión
+    session.pop("usuario_id", None)
     return redirect(url_for("login"))
 
 # Ruta para mostrar productos

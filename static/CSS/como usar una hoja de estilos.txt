@@ -1,0 +1,9 @@
+Crea un archivo CSS con esta hoja de estilos, por ejemplo, styles.css.
+Enlaza este archivo en el archivo HTML de tu plataforma web:
+
+<link rel="stylesheet" href="styles.css">
+
+Organiza tu HTML en secciones como header, nav, section, footer, y usa clases como container, btn, form, etc., 
+para aprovechar al máximo los estilos definidos.
+Este CSS proporciona una base sólida para construir una plataforma web con un diseño limpio y moderno, adaptable a diferentes dispositivos. 
+Puedes personalizarlo según las necesidades específicas de tu proyecto.

@@ -1,0 +1,71 @@
+/* Estilo básico para todas las imágenes */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto; /* Centra la imagen */
+    border: 1px solid #ccc; /* Agrega un borde ligero */
+    border-radius: 8px; /* Bordes redondeados */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra */
+    transition: transform 0.2s ease-in-out; /* Efecto de transición para hover */
+}
+
+/* Efecto hover para aumentar la imagen */
+img:hover {
+    transform: scale(1.05); /* Aumenta ligeramente la imagen al pasar el mouse */
+}
+
+/* Estilo para imágenes en miniatura */
+.thumbnail {
+    width: 150px;
+    height: 150px;
+    object-fit: cover; /* Recorta la imagen para que se ajuste al contenedor */
+    border-radius: 4px;
+    margin: 10px;
+}
+
+/* Estilo para imágenes circulares */
+.circular {
+    border-radius: 50%; /* Hace que la imagen sea circular */
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+}
+
+/* Estilo para imágenes con un filtro de escala de grises */
+.grayscale {
+    filter: grayscale(100%);
+    transition: filter 0.3s ease-in-out;
+}
+
+.grayscale:hover {
+    filter: grayscale(0%); /* Remueve el filtro en hover */
+}
+
+/* Estilo para imágenes que necesitan un marco */
+.framed {
+    border: 5px solid #000; /* Agrega un marco grueso negro */
+    padding: 10px; /* Espacio entre la imagen y el marco */
+    background-color: #fff; /* Fondo blanco para el marco */
+}
+
+/* Estilo para imágenes flotantes */
+.float-left {
+    float: left;
+    margin: 10px;
+}
+
+.float-right {
+    float: right;
+    margin: 10px;
+}
+
+/* Estilo para imágenes con opacidad */
+.opacity {
+    opacity: 0.8;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.opacity:hover {
+    opacity: 1; /* Aumenta la opacidad en hover */
+}
