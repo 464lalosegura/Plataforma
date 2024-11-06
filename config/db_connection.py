@@ -5,7 +5,7 @@ def create_connection():
     try:
         connection = mysql.connector.connect(
             host='localhost',
-            database='plataforma',  
+            database='plataforma',
             user='root',  
             password=''  
         )
@@ -21,12 +21,7 @@ def close_connection(connection):
         connection.close()
         print("Conexión cerrada")
 
-
 if __name__ == "__main__":
     conn = create_connection()
     if conn:
         close_connection(conn)
-        
-
-
-

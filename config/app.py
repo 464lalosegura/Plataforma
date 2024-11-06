@@ -4,9 +4,39 @@ from db_connection import create_connection, close_connection
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'
 
-# Ruta para la página de inicio, redirige al inicio de sesión
+# Página principal que redirige a "Pagina_de_inicio.html"
 @app.route("/")
 def inicio():
+    return redirect(url_for("pagina_inicio"))
+
+# Ruta para la página de inicio
+@app.route("/pagina_inicio")
+def pagina_inicio():
+    return render_template("Pagina_de_inicio.html")
+
+# Ruta para el registro de usuarios
+@app.route("/registro", methods=["POST"])
+def registro():
+    nombre = request.form["nombre"]
+    correo = request.form["correo"]
+    contrasena = request.form["contrasena"]
+    
+    try:
+        # Guardar datos en la base de datos
+        conn = create_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO usuario (nombre, correo, contraseña) 
+            VALUES (%s, %s, %s)
+        """, (nombre, correo, contrasena))
+        conn.commit()
+    except Exception as e:
+        flash("Error al registrar el usuario: " + str(e))
+        return redirect(url_for("pagina_inicio"))
+    finally:
+        close_connection(conn)
+    
+    flash("Registro exitoso. Ahora puede iniciar sesión.")
     return redirect(url_for("login"))
 
 # Ruta para la página de inicio de sesión
@@ -16,13 +46,11 @@ def login():
         usuario = request.form["usuario"]
         contrasena = request.form["contrasena"]
         
-        # Conexión a la base de datos
         conn = create_connection()
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM usuario WHERE nombre = %s AND contraseña = %s", (usuario, contrasena))
         user = cursor.fetchone()
         
-        # Si las credenciales son correctas, redirigir al panel de usuario
         if user:
             session["usuario"] = usuario
             session["usuario_id"] = user[0]
@@ -64,18 +92,24 @@ def enviar_reclamo():
     categoria = request.form["categoria"]
     mensaje = request.form["mensaje"]
     
-    conn = create_connection()
-    cursor = conn.cursor()
-    cursor.execute("""
-        INSERT INTO reclamo (usuario_id, producto_id, categoria, mensaje)
-        VALUES (%s, %s, %s, %s)
-    """, (usuario_id, producto_id, categoria, mensaje))
-    conn.commit()
-    close_connection(conn)
+    try:
+        conn = create_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO reclamo (usuario_id, producto_id, categoria, mensaje)
+            VALUES (%s, %s, %s, %s)
+        """, (usuario_id, producto_id, categoria, mensaje))
+        conn.commit()
+    except Exception as e:
+        flash("Error al enviar el reclamo: " + str(e))
+        return redirect(url_for("panel_usuario"))
+    finally:
+        close_connection(conn)
     
     flash("Tu reclamo fue enviado con éxito.")
     return redirect(url_for("panel_usuario"))
 
+# Ruta para quejas
 @app.route('/quejas')
 def quejas():
     return render_template('quejas.html')

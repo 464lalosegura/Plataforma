@@ -24,13 +24,16 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-        /* Imagen de marca de agua */
         .marca-agua {
-            position: absolute;
-            top: 20px;
-            right: 20px;
             width: 200px;
             opacity: 0.5;
+        }
+
+        .flex-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            margin-top: 20px;
         }
 
         .container {
@@ -92,9 +95,10 @@
 <body>
 
     <h1>PLATAFORMA DE ATENCIÓN A CLIENTES DICONSA</h1>
-    <img src="imagenes/logo3.png" alt="No se puede cargar la imagen" class="marca-agua">
-
-    <div class="container">
+    
+    <div class="flex-container">
+        <img src="E:\RESIDENCIA\Elaboracion del proyecto\Plataforma\static\imagenes/logo3.png" alt="Logo de Diconsa" class="marca-agua">
+    
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">Productos de Diconsa</h5>
@@ -102,7 +106,9 @@
                 <a href="productos.html" class="btn btn-primary">Ver productos</a>
             </div>
         </div>
-
+    
+    </div>
+    <div class="container">
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">Horarios para pagar</h5>
@@ -129,6 +135,7 @@
 
         <div class="card">
             <div class="card-body">
+                
                 <h5 class="card-title">Contacto del Almacén</h5>
                 <p class="card-text">Obtén información de contacto del almacén.</p>
                 <a href="seccion_de_contacto.html" class="btn btn-primary">Ver contacto</a>
