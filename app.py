@@ -127,14 +127,15 @@ def redessociales():
 def seccion_de_contacto():
     return render_template("seccion_de_contacto.html")
 
-# Ruta para sección de contacto
-@app.route("/seccion_de_contacto")
+# Ruta para horarios
+@app.route("/horarios")
 def horarios():
     return render_template("horarios.html")
 # Ruta para informacion legal
-@app.route("/seccion_de_contacto")
+@app.route("/informacionlegal")
 def informacionlegal():
     return render_template("informacionlegal.html")
+#Ruta de horarios para pagar
 
 
 if __name__ == "__main__":
