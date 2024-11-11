@@ -5,7 +5,7 @@ from db_connection import create_connection, close_connection
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'
 
-# Página principal que redirige a "home.html"
+# Página principal
 @app.route("/")
 def inicio():
     return render_template("home.html")
@@ -17,12 +17,9 @@ def registro():
         nombre = request.form["nombre"]
         correo = request.form["correo"]
         contrasena = request.form["contrasena"]
-        
-        # Hashear la contraseña antes de guardarla
         contrasena_hash = generate_password_hash(contrasena)
 
         try:
-            # Guardar datos en la base de datos
             conn = create_connection()
             cursor = conn.cursor()
             cursor.execute("""
@@ -30,15 +27,16 @@ def registro():
                 VALUES (%s, %s, %s)
             """, (nombre, correo, contrasena_hash))
             conn.commit()
+            session["usuario"] = nombre
+            session["usuario_id"] = cursor.lastrowid
+            flash("Registro exitoso. Bienvenido al panel de usuario.")
+            return redirect(url_for("panel_usuario"))
         except Exception as e:
             flash("Error al registrar el usuario: " + str(e))
             return redirect(url_for("registro"))
         finally:
             close_connection(conn)
-        
-        flash("Registro exitoso. Ahora puede iniciar sesión.")
-        return redirect(url_for("login"))
-    return render_template("logup.html")  # Asegúrate de tener logup.html como tu formulario de registro
+    return render_template("logup.html")
 
 # Ruta para la página de inicio de sesión
 @app.route("/login", methods=["GET", "POST"])
@@ -54,7 +52,7 @@ def login():
             cursor.execute("SELECT * FROM usuario WHERE correo = %s", (usuario,))
             user = cursor.fetchone()
 
-            if user and check_password_hash(user[2], contrasena):  # Suponiendo que la contraseña está en el índice 2
+            if user and check_password_hash(user[2], contrasena):
                 session["usuario"] = usuario
                 session["usuario_id"] = user[0]
                 return redirect(url_for("panel_usuario"))
@@ -123,6 +121,21 @@ def quejas():
 @app.route("/redessociales")
 def redessociales():
     return render_template("redessociales.html")
+
+# Ruta para sección de contacto
+@app.route("/seccion_de_contacto")
+def seccion_de_contacto():
+    return render_template("seccion_de_contacto.html")
+
+# Ruta para sección de contacto
+@app.route("/seccion_de_contacto")
+def horarios():
+    return render_template("horarios.html")
+# Ruta para informacion legal
+@app.route("/seccion_de_contacto")
+def informacionlegal():
+    return render_template("informacionlegal.html")
+
 
 if __name__ == "__main__":
     app.run(debug=True, host="127.0.0.1", port=5000)
