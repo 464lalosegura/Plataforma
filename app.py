@@ -64,7 +64,7 @@ def login():
             close_connection(conn)
     
     return render_template("login.html", error=error)
-
+    
 # Ruta para el panel de usuario
 @app.route("/panel_usuario")
 def panel_usuario():
@@ -135,7 +135,8 @@ def horarios():
 @app.route("/informacionlegal")
 def informacionlegal():
     return render_template("informacionlegal.html")
-#Ruta de horarios para pagar
+
+
 
 
 if __name__ == "__main__":
