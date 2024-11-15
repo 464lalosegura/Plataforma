@@ -69,7 +69,8 @@
         <div id="error-message" class="error-message"></div>
         
         <!-- Enviamos el formulario a Flask (ruta registrar_cliente) -->
-        <form action="{{ url_for('registro') }}" method="POST">
+        <form id="registrationForm" action="{{ url_for('registro') }}" method="POST">
+
             <!-- Información Personal -->
             <label for="nombre">Nombre Completo del Encargado:</label>
             <input type="text" id="nombre" name="nombre" required>
@@ -124,46 +125,49 @@
                 <button type="submit">Enviar</button>
             </form>
         </div>
-    
         <script>
-            document.getElementById('registrationForm').addEventListener('submit', function(event) {
-                var isValid = true;
-                var errorMessage = '';
-                var requiredFields = document.querySelectorAll('input[required], select[required]');
-                var errorDiv = document.getElementById('error-message');
-    
-                // Clear previous error messages and styles
-                errorDiv.textContent = '';
-                requiredFields.forEach(function(field) {
-                    field.classList.remove('invalid');
-                });
-    
-                // Validate required fields
-                requiredFields.forEach(function(field) {
-                    if (!field.value) {
+            document.addEventListener('DOMContentLoaded', function() {
+                document.getElementById('registrationForm').addEventListener('submit', function(event) {
+                    var isValid = true;
+                    var errorMessage = '';
+                    var requiredFields = document.querySelectorAll('input[required], select[required]');
+                    var errorDiv = document.getElementById('error-message');
+            
+                    // Clear previous error messages and styles
+                    errorDiv.textContent = '';
+                    requiredFields.forEach(function(field) {
+                        field.classList.remove('invalid');
+                    });
+            
+                    // Validate required fields
+                    requiredFields.forEach(function(field) {
+                        if (!field.value) {
+                            isValid = false;
+                            field.classList.add('invalid');
+                        }
+                    });
+            
+                    // Check for password match
+                    var password = document.getElementById('password').value;
+                    var confirmPassword = document.getElementById('confirmPassword').value;
+                    if (password !== confirmPassword) {
                         isValid = false;
-                        field.classList.add('invalid');
+                        document.getElementById('password').classList.add('invalid');
+                        document.getElementById('confirmPassword').classList.add('invalid');
+                        errorMessage += 'Las contraseñas no coinciden.<br>';
+                    }
+            
+                    // Show error message and prevent form submission if invalid
+                    if (!isValid) {
+                        errorMessage += 'Error, por favor, asegúrese de haber completado todos los campos.';
+                        errorDiv.innerHTML = errorMessage;
+                        event.preventDefault(); // Prevent form submission
                     }
                 });
-    
-                // Check for password match
-                var password = document.getElementById('password').value;
-                var confirmPassword = document.getElementById('confirmPassword').value;
-                if (password !== confirmPassword) {
-                    isValid = false;
-                    document.getElementById('password').classList.add('invalid');
-                    document.getElementById('confirmPassword').classList.add('invalid');
-                    errorMessage += 'Las contraseñas no coinciden.<br>';
-                }
-    
-                // Show error message and prevent form submission if invalid
-                if (!isValid) {
-                    errorMessage += 'Error, por favor, asegúrese de haber completado todos los campos.';
-                    errorDiv.innerHTML = errorMessage;
-                    event.preventDefault(); // Prevent form submission
-                }
             });
         </script>
+
+
     </body>
     </html>
     
