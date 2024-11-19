@@ -1,28 +1,24 @@
-import mysql.connector
+from mysql.connector import Error
 
-# Establecer la conexión a la base de datos
-connection = mysql.connector.connect(
-    host='localhost',
-    user='root',
-    password="",
-    database="plataforma"
-)
+def test_connection():
+    try:
+        connection = mysql.connector.connect(
+            host='localhost',
+            database='plataforma',
+            user='root',  
+            password=''  
+        )
+        if connection.is_connected():
+            print("Conexión exitosa a la base de datos")
+            cursor = connection.cursor()
+            cursor.execute("SELECT * FROM usuario")
+            rows = cursor.fetchall()
+            for row in rows:
+                print(row)
+    except Error as e:
+        print(f"Error al conectarse a la base de datos: {e}")
+    finally:
+        if connection.is_connected():
+            connection.close()
 
-try:
-    cursor = connection.cursor(dictionary=True)
-    
-    # Ejecutar la consulta de inserción
-    cursor.execute(
-        'INSERT INTO usuarios (nombre, apellido, correo, rol, fecha_creacion, ultima_actualizacion) VALUES (%s, %s, %s, %s, NOW(), NOW())',
-        (nombre, apellido, correo, rol)
-    )
-    
-    # Confirmar los cambios
-    connection.commit()
-
-except mysql.connector.Error as err:
-    print(f"Error: {err}")
-finally:
-    # Cerrar el cursor y la conexión
-    cursor.close()
-    connection.close()
+test_connection()

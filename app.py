@@ -4,6 +4,7 @@ from db_connection import create_connection, close_connection
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'
+print(f"Clave secreta configurada: {app.secret_key}")
 
 # Página principal
 @app.route("/")
@@ -22,6 +23,11 @@ def registro():
         try:
             conn = create_connection()
             cursor = conn.cursor()
+            cursor.execute("SELECT * FROM usuario")
+            usuarios = cursor.fetchall()
+            print("Usuarios en la base de datos:")
+            for usuario in usuarios:
+                print(usuario) 
             cursor.execute("""
                 INSERT INTO usuario (nombre, correo, contraseña) 
                 VALUES (%s, %s, %s)
@@ -29,6 +35,7 @@ def registro():
             conn.commit()
             session["usuario"] = nombre
             session["usuario_id"] = cursor.lastrowid
+            print(f"Usuario: {session.get('usuario')}, Usuario ID: {session.get('usuario_id')}")
             flash("Registro exitoso. Bienvenido al panel de usuario.")
             return redirect(url_for("panel_usuario"))
         except Exception as e:
@@ -69,6 +76,7 @@ def login():
 @app.route("/panel_usuario")
 def panel_usuario():
     if "usuario" in session:
+        print(f"Bienvenido al panel de usuario: {session.get('usuario')}, ID de usuario: {session.get('usuario_id')}")
         return render_template("panelUser.html", usuario=session["usuario"])
     return redirect(url_for("login"))
 
