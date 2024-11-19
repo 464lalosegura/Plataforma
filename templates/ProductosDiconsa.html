@@ -1,0 +1,454 @@
+<!DOCTYPE h<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productos Diconsa</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        h1 {
+            text-align: center;
+            padding: 20px 0;
+            color: #0056b3;
+            background: #e9ecef;
+            border-radius: 10px;
+            margin: 20px;
+        }
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+        .product-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            background: #ffffff;
+            padding: 15px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .product-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        .product-image {
+            width: 100%;
+            height: 150px;
+            object-fit: contain;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        .product-name {
+            font-size: 1.1em;
+            color: #444;
+            margin: 0;
+            font-weight: bold;
+        }
+        .footer {
+            background-color: #ffcc80;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: auto;
+            border-top: 2px solid #ddd;
+        }
+    </style>-
+    <div class="container">
+        <h1>Productos de la canasta básica</h1>
+        <div class="product-list">
+            
+            <div class="product-card">
+</head>
+ <body>
+
+    <div class="container my-4">
+        <div class="row">
+            <!-- Primer producto -->
+            <div class="col-md-6 product-card">
+                <form action="{{ url_for('ver_pedido') }}" method="POST">
+                    <input type="hidden" name="id_categoria" value="id_del_producto">
+                    <input type="hidden" name="nombre" value="Nombre del producto">
+                    <img src="{{ url_for('static', filename='imagenes/ProductosDiconsa/aceite.png') }}" alt="Aceite vegetal comestible Patrona" class="product-image">
+                    <h5>Aceite vegetal comestible "Patrona"</h5>
+                    <p class="form-control" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 8px; margin-top: 10px;">
+                        de 1 lt $35 <br>
+                        160gr $10.50
+                    </p>
+                    <button type="submit" class="btn btn-primary">Agregar al pedido</button>
+                </form>
+            </div>
+    
+            <!-- Segundo producto -->
+            <div class="col-md-6 product-card">
+                <form action="{{ url_for('ver_pedido') }}" method="POST">
+                    <input type="hidden" name="id_categoria" value="id_del_producto">
+                    <input type="hidden" name="nombre" value="Nombre del producto">
+                    <img src="{{ url_for('static', filename='imagenes/ProductosDiconsa/agua.png') }}" alt="Agua purificada Pascual" class="product-image">
+                    <h5 class="product-name">Agua purificada "Pascual"</h5>
+                    <p class="form-control" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 8px; margin-top: 10px;">
+                        de 1.5lt $12
+                    </p>
+                    <button type="submit" class="btn btn-primary">Agregar al pedido</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+            <div class="row">
+                <ul class="product-list">
+                    <form action="{{ url_for('ver_pedido') }}" method="POST">
+                        <input type="hidden" name="id_categoria" value="id_del_producto">
+                        <input type="hidden" name="nombre" value="Nombre del producto">
+                <div class="col-md-6 product-card">
+                <img src="{{ url_for('static', filename='imagenes/ProductosDiconsa/arroz.png') }}" alt="Arroz Envasado" class="product-image">
+                <h5 class="product-name">Arroz Envasado</h5>
+                <p class="form-control" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 8px; margin-top: 10px;">
+                    bolsa con 1kg $38
+                </p>  
+            </p>
+            <button type="submit" class="btn btn-primary">Agregar al pedido</button>
+            
+            </div>
+            <div class="row">
+                <ul class="product-list">
+                    <form action="{{ url_for('ver_pedido') }}" method="POST">
+                        <input type="hidden" name="id_categoria" value="id_del_producto">
+                        <input type="hidden" name="nombre" value="Nombre del producto">
+                <div class="col-md-6 product-card">
+                <img src="{{ url_for('static', filename='imagenes/ProductosDiconsa/eldorado.png') }}" alt="Atún en aceite El Dorado" class="product-image">
+                <div class="product-name">Atún en aceite "El Dorado"</div>
+                <p class="form-control" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 8px; margin-top: 10px;">
+                    contenido 130gr $13
+                </p>
+                 </p>
+            <button type="submit" class="btn btn-primary">Agregar al pedido</button>
+            </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 product-card">
+                <img src="{{ url_for('static', filename='imagenes/ProductosDiconsa/avena.png') }}" alt="Avena natural en bolsa El Granvita" class="product-image">
+                <div class="product-name">Avena natural en bolsa "El Granvita"</div>
+                <p class="form-control" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 8px; margin-top: 10px;">
+                    400gr  $12
+                </p>
+            
+            </div>
+            
+                <div class="col-md-6 product-card">
+                <img src="{{ url_for('static', filename='imagenes/ProductosDiconsa/azucar.png') }}" alt="Azúcar Estándar Envasado" class="product-image">
+                <div class="product-name">Azúcar Estándar Envasado</div>
+                <p class="form-control" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 8px; margin-top: 10px;">
+                    1kg $17.50
+                </p>
+            </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 product-card">
+                <img src="{{ url_for('static', filename='imagenes/ProductosDiconsa/cloro.png') }}" alt="Blanqueador Cloralex" class="product-image">
+                <div class="product-name">Blanqueador "Cloralex"</div>
+                <p class="form-control" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 8px; margin-top: 10px;">
+                    950ml $13.50
+                </p>
+                
+            </div>
+            
+                <div class="col-md-6 product-card">
+                <img src="{{ url_for('static', filename='imagenes/ProductosDiconsa/nescafe.png') }}" alt="Café soluble Nescafé Clásico" class="product-image">
+                <div class="product-name">Café soluble "Nescafé Clásico"</div>
+                <p class="form-control" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 8px; margin-top: 10px;">
+                    120gr  $70
+                </p>
+            </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 product-card">
+                <img src="{{ url_for('static', filename='imagenes/ProductosDiconsa/chiles.png') }}" alt="Chiles jalapeños Enteros La Costeña" class="product-image">
+                <div class="product-name">Chiles jalapeños Enteros "La Costeña"</div>
+                <p class="form-control" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 8px; margin-top: 10px;">
+                    220gr $14.50
+                </p>
+            
+            </div>
+            
+                <div class="col-md-6 product-card">
+                <img src="{{ url_for('static', filename='imagenes/ProductosDiconsa/chocomilk.png') }}" alt="Chocolate de mesa en polvo bolsa Chocomilk" class="product-image">
+                <div class="product-name">Chocolate de mesa en polvo bolsa "Chocomilk"</div>
+                <p class="form-control" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 8px; margin-top: 10px;">
+                    540gr $80
+                </p>
+            </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 product-card">
+                <img src="{{ url_for('static', filename='imagenes/ProductosDiconsa/colgate.png') }}" alt="Crema Dental Colgate" class="product-image">
+                <div class="product-name">Crema Dental "Colgate"</div>
+                <p class="form-control" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 8px; margin-top: 10px;">
+                50ml $19.30
+                </p>
+               
+            </div>
+            
+                <div class="col-md-6 product-card">
+                <img src="{{ url_for('static', filename='imagenes/ProductosDiconsa/foca.png') }}" alt="Detergente en polvo bolsa Foca" class="product-image">
+                <div class="product-name">Detergente en polvo bolsa "Foca"</div>
+                <p class="form-control" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 8px; margin-top: 10px;">
+                    1kg $33
+                </p>
+            </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 product-card">
+                <img src="{{ url_for('static', filename='imagenes/ProductosDiconsa/ensalada.png') }}" alt="Ensalada de Verduras La Costeña" class="product-image">
+                <div class="product-name">Ensalada de Verduras "La Costeña"</div>
+                <p class="form-control" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 8px; margin-top: 10px;">
+                    220gr $12.70
+                </p>
+            
+            </div>
+            
+                <div class="col-md-6 product-card">
+                <img src="{{ url_for('static', filename='imagenes/ProductosDiconsa/frijol.png') }}" alt="Frijol Envasado" class="product-image">
+                <div class="product-name">Frijol Envasado</div>
+                <p class="form-control" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 8px; margin-top: 10px;">
+                    1kg $60
+                </p>
+            </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 product-card">
+                <img src="{{ url_for('static', filename='imagenes/ProductosDiconsa/galletas.png') }}" alt="Galletas de animalitos Cuétara" class="product-image">
+                <div class="product-name">Galletas de animalitos "Cuétara"</div>
+                <p class="form-control" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 8px; margin-top: 10px;">
+                    800gr $53.50
+                </p>
+            
+            </div>
+            
+                <div class="col-md-6 product-card">
+                <img src="{{ url_for('static', filename='imagenes/ProductosDiconsa/marias.png') }}" alt="Galletas Marías Cuétara" class="product-image">
+                <div class="product-name">Galletas Marías "Cuétara"</div>
+                <p class="form-control" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 8px; margin-top: 10px;">
+                    160gr 10.50
+                </p>
+            </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 product-card">
+                <img src="{{ url_for('static', filename='imagenes/ProductosDiconsa/gelatina.png') }}" alt="Gelatinas D'gari" class="product-image">
+                <div class="product-name">Gelatinas "D´gari"</div>
+                <p class="form-control" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 8px; margin-top: 10px;">
+                120gr 13.50
+                </p>
+            
+            </div>
+            
+                <div class="col-md-6 product-card">
+                <img src="{{ url_for('static', filename='imagenes/ProductosDiconsa/trigo.png') }}" alt="Harina de Trigo Selecta" class="product-image">
+                <div class="product-name">Harina de Trigo "Selecta"</div>
+                <p class="form-control" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 8px; margin-top: 10px;">
+                    1kg $15.90
+                </p>
+            </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 product-card">
+                <img src="{{ url_for('static', filename='imagenes/ProductosDiconsa/trigo.png') }}" alt="Hojuela de Maíz Azucarada Golden Foods" class="product-image">
+                <div class="product-name">Hojuela de Maíz Azucarada "Golden Foods"</div>
+                <p class="form-control" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 8px; margin-top: 10px;">
+                    500gr $18.50
+                </p>
+            
+            </div>
+            
+                <div class="col-md-6 product-card">
+                <img src="{{ url_for('static', filename='imagenes/ProductosDiconsa/insecticida.png') }}" alt="Insecticida Aerosol Multiusos Oko" class="product-image">
+                <div class="product-name">Insecticida Aerosol Multiusos "Oko"</div>
+                <p class="form-control" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 8px; margin-top: 10px;">
+                    230ml $54.50
+                </p>
+            </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 product-card">
+                <img src="{{ url_for('static', filename='imagenes/ProductosDiconsa/zote.png') }}"alt="Jabón de Lavandería Zote" class="product-image">
+                <div class="product-name">Jabón de Lavandería "Zote"</div>
+                <p class="form-control" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 8px; margin-top: 10px;">
+                    400gr $42.90
+                </p>
+            </div>
+            
+                <div class="col-md-6 product-card">
+                <img src="{{ url_for('static', filename='imagenes/ProductosDiconsa/jabon.png') }}" alt="Jabón de tocador Rosa Venus" class="product-image">
+                <div class="product-name">Jabón de tocador "Rosa Venus"</div>
+                <p class="form-control" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 8px; margin-top: 10px;">
+                    150gr $10.50
+                </p>
+            </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 product-card">
+                <img src="{{ url_for('static', filename='imagenes/ProductosDiconsa/jumex.png') }}" alt="Jugo Tetrabrik Jumex" class="product-image">
+                <div class="product-name">Jugo Tetrabrik "Jumex"</div>
+                <p class="form-control" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 8px; margin-top: 10px;">
+                    1lt $28.50
+                </p>
+            
+            </div>
+            
+                <div class="col-md-6 product-card">
+                <img src="{{ url_for('static', filename='imagenes/ProductosDiconsa/leche.png') }}" alt="Leche Entera Natural Alpura" class="product-image">
+                <div class="product-name">Leche Entera Natural "Alpura"</div>
+                <p class="form-control" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 8px; margin-top: 10px;">
+                    1lt $33.90
+                </p>
+            </div>
+            </div>
+            <div  class="row">
+                <div class="col-md-6 product-card">
+                <img src="{{ url_for('static', filename='imagenes/ProductosDiconsa/carnation.png') }}" alt="Leche Evaporada Carnation" class="product-image">
+                <div class="product-name">Leche Evaporada "Carnation"</div>
+                <p class="form-control" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 8px; margin-top: 10px;">
+                    360gr $20.50
+                </p>
+            
+            </div>
+        
+                <div class="col-md-6 product-card">
+                <img src="{{ url_for('static', filename='imagenes/ProductosDiconsa/lenteja.png') }}" alt="Lenteja Envasada" class="product-image">
+                <div class="product-name">Lenteja Envasada</div>
+                <p class="form-control" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 8px; margin-top: 10px;">
+                    500gr $29.50
+                </p>
+            </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 product-card">
+                <img src="{{ url_for('static', filename='imagenes/ProductosDiconsa/pinol.png') }}" alt="Limpiador Líquido Pinol" class="product-image">
+                <div class="product-name">Limpiador Líquido "Pinol"</div>
+                <p class="form-control" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 8px; margin-top: 10px;">
+                    1lt $31.50
+                </p>
+            
+            </div>
+            
+                <div class="col-md-6 product-card">
+                <img src="{{ url_for('static', filename='imagenes/ProductosDiconsa/maiz.png') }}" alt="Maíz blanco envasado" class="product-image">
+                <div class="product-name">Maíz blanco envasado</div>
+                <p class="form-control" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 8px; margin-top: 10px;">
+                  1kg  $35
+                </p>
+            </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 product-card">
+                <img src="{{ url_for('static', filename='imagenes/ProductosDiconsa/pañales.png') }}" alt="Pañales desechables KKBB Absorsec" class="product-image">
+                <div class="product-name">Pañales desechables "KKBB Absorsec"</div>
+                <p class="form-control" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 8px; margin-top: 10px;">
+                    paquete con 14 piezas 54.90
+                </p>
+            
+            </div>
+            
+                <div class="col-md-4 product-card">
+                <img src="{{ url_for('static', filename='imagenes/ProductosDiconsa/papel.png') }}" alt="Papel Higiénico Premier" class="product-image">
+                <div class="product-name">Papel Higiénico "Premier"</div>
+                <p class="form-control" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 8px; margin-top: 10px;">
+            
+                        paquete con 4 rollos $26.80
+                    </p>
+                </p>
+            </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 product-card">
+                <img src="{{ url_for('static', filename='imagenes/ProductosDiconsa/pasta.png') }}" alt="Pasta para sopa Italpasta" class="product-image">
+                <div class="product-name">Pasta para sopa "Italpasta"</div>
+                <p class="form-control" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 8px; margin-top: 10px;">
+                    200gr $9.50
+                </p>
+            
+            </div>
+            
+                <div class="col-md-6 product-card">
+                <img src="{{ url_for('static', filename='imagenes/ProductosDiconsa/pure.png') }}" alt="Puré de tomate La Costeña" class="product-image">
+                <div class="product-name">Puré de tomate "La Costeña"</div>
+                <p class="form-control" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 8px; margin-top: 10px;">
+                220gr 9.93
+                </p>
+            </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 product-card">
+                <img src="{{ url_for('static', filename='imagenes/ProductosDiconsa/sal.png') }}" alt="Sal de mesa La Fina" class="product-image">
+                <div class="product-name">Sal de mesa "La Fina"</div>
+                <p class="form-control" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 8px; margin-top: 10px;">
+                    1kg $18.20
+                </p>
+            
+            </div>
+            
+                <div class="col-md-6 product-card">
+                <img src="{{ url_for('static', filename='imagenes/ProductosDiconsa/sardina.png') }}" alt="Sardina enlatada Fresh Label" class="product-image">
+                <div class="product-name">Sardina enlatada "Fresh Label"</div>
+                <p class="form-control" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 8px; margin-top: 10px;">
+                    425gr $39.90
+                </p>
+            </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 product-card">
+                <img src="{{ url_for('static', filename='imagenes/ProductosDiconsa/petalo.png') }}" alt="Servilletas Petalo" class="product-image">
+                <div class="product-name">Servilletas "Pétalo"</div>
+                <p class="form-control" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 8px; margin-top: 10px;">
+                    contenido con 100 piezas $18.90
+                </p>
+            
+            </div>
+            
+                <div class="col-md-6 product-card">
+                <img src="{{ url_for('static', filename='imagenes/ProductosDiconsa/soya.png') }}" alt="Soya texturizada Nutricasa" class="product-image">
+                <div class="product-name">Soya texturizada "Nutricasa"</div>
+                <p class="form-control" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 8px; margin-top: 10px;">
+                    330gr $15.50
+                </p>
+            </div>
+        </div>
+            <div class="row">
+                <div class="col-md-6 product-card">
+                <img src="{{ url_for('static', filename='imagenes/ProductosDiconsa/suavizante.png') }}" alt="Suavizante de telas Ensueño" class="product-image">
+                <div class="product-name">Suavizante de telas "Ensueño"</div>
+                <p class="form-control" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 8px; margin-top: 10px;">
+                    850ml $25.40
+                </p>
+            
+            </div>
+        
+                <div class="col-md-6 product-card">
+                <img src="{{ url_for('static', filename='imagenes/ProductosDiconsa/toallas.png') }}" alt="Toallas sanitarias Saba" class="product-image">
+                <div class="product-name">Toallas sanitarias "Saba"</div>
+                <p class="form-control" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 8px; margin-top: 10px;">
+                    paquete con 8 piezas $28.30
+                </p>
+            </div>
+            </div>
+        </ul>
+    </div>
+</div>
+<div class="footer">
+    <p>&copy; 2024 Productos Diconsa. Todos los derechos reservados.</p>
+</div>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

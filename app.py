@@ -131,11 +131,20 @@ def seccion_de_contacto():
 @app.route("/horarios")
 def horarios():
     return render_template("horarios.html")
-# Ruta para informacion legal
+  # Ruta para informacion legal
 @app.route("/informacionlegal")
 def informacionlegal():
     return render_template("informacionlegal.html")
 
+# Ruta para los productos dentro del panel del encargado de la Tienda Comunitaria
+@app.route("/ProductosDiconsa")
+def productos_diconsa():
+    return render_template("ProductosDiconsa.html")
+
+@app.route("/pedido", methods=["POST"])
+def ver_pedido():
+    # Aquí podrías capturar datos del formulario si es necesario
+    return render_template("pedido.html")
 
 
 
