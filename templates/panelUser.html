@@ -62,7 +62,7 @@
             <div class="card-body">
                 <h5 class="card-title">Gestión de Productos</h5>
                 <p class="card-text">Accede a la lista de productos, agrega nuevos productos o actualiza los existentes.</p>
-                <a href="/productos" class="btn btn-primary">Ir a Productos</a>
+                <a href="{{ url_for('productos') }}" class="btn btn-primary">Ir a Productos</a>
             </div>
         </div>
 
@@ -71,7 +71,7 @@
             <div class="card-body">
                 <h5 class="card-title">Quejas, Opiniones y Sugerencias</h5>
                 <p class="card-text">Consulta o gestiona los reclamos, opiniones o sugerencias enviados por las tiendas.</p>
-                <a href="/quejas" class="btn btn-primary">Ver Reclamos</a>
+                <a href="{{ url_for('quejas') }}" class="btn btn-primary">Ver Reclamos</a>
             </div>
         </div>
     </div>

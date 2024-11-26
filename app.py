@@ -50,7 +50,7 @@ def registro():
 def login():
     error = None
     if request.method == "POST":
-        usuario = request.form["usuario"]
+        usuario = request.form["correo"]
         contrasena = request.form["contrasena"]
 
         conn = create_connection()
@@ -59,7 +59,7 @@ def login():
             cursor.execute("SELECT * FROM usuario WHERE correo = %s", (usuario,))
             user = cursor.fetchone()
 
-            if user and check_password_hash(user[2], contrasena):
+            if user and check_password_hash(user[3], contrasena):
                 session["usuario"] = usuario
                 session["usuario_id"] = user[0]
                 return redirect(url_for("panel_usuario"))
@@ -73,12 +73,16 @@ def login():
     return render_template("login.html", error=error)
     
 # Ruta para el panel de usuario
-@app.route("/panel_usuario")
+@app.route("/panelUser")
 def panel_usuario():
     if "usuario" in session:
         print(f"Bienvenido al panel de usuario: {session.get('usuario')}, ID de usuario: {session.get('usuario_id')}")
         return render_template("panelUser.html", usuario=session["usuario"])
-    return redirect(url_for("login"))
+    return redirect(url_for("registro"))
+
+
+
+
 
 # Ruta para cerrar sesión
 @app.route("/logout")
