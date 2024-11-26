@@ -60,8 +60,8 @@ def login():
             user = cursor.fetchone()
 
             if user and check_password_hash(user[3], contrasena):
-                session["usuario"] = usuario
-                session["usuario_id"] = user[0]
+                session["usuario"] = user[1]  
+                session["usuario_id"] = user[0]  
                 return redirect(url_for("panel_usuario"))
             else:
                 error = "Usuario o contraseña incorrectos"
