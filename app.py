@@ -155,7 +155,7 @@ def productos_diconsa():
 
 @app.route("/pedido", methods=["POST"])
 def ver_pedido():
-    # Aquí podrías capturar datos del formulario si es necesario
+    
     return render_template("pedido.html")
 
 
