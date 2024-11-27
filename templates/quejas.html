@@ -62,14 +62,14 @@
             <!-- Selección de producto dinámico -->
             <label for="producto_id">Seleccione un Producto:</label>
             <select id="producto_id" name="producto_id" class="form-select" required>
-                <option value="">Seleccione un producto</option>
+                <option value="">Seleccione una categoria</option>
                 {% for producto in productos %}
                 <option value="{{ producto['id'] }}">{{ producto['descripcion'] }}</option>
                 {% endfor %}
             </select>
 
             <!-- Categoría de la queja, opinión o sugerencia -->
-            <label for="categoria">Seleccione una categoría:</label>
+            <label for="categoria">Cuentanos lo que piensas:</label>
             <select id="categoria" name="categoria" class="form-select" required>
                 <option value="queja">Queja</option>
                 <option value="opinion">Opinión</option>
