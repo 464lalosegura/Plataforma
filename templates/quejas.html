@@ -60,13 +60,14 @@
             <input type="hidden" name="usuario_id" value="{{ session['usuario_id'] }}">
             
             <!-- Selección de producto dinámico -->
-            <label for="producto_id">Seleccione un Producto:</label>
-            <select id="producto_id" name="producto_id" class="form-select" required>
-                <option value="">Seleccione una categoria</option>
-                {% for producto in productos %}
-                <option value="{{ producto['id'] }}">{{ producto['descripcion'] }}</option>
-                {% endfor %}
-            </select>
+           <!-- Selección de categoría dinámica -->
+<label for="categoria">Seleccione una Categoría:</label>
+<select id="categoria" name="categoria_id" class="form-select" required>
+    <option value="">Seleccione una categoría</option>
+    {% for categoria in categorias %}
+        <option value="{{ categoria['ID_Categoria'] }}">{{ categoria['Nombre'] }}</option>
+    {% endfor %}
+</select>
 
             <!-- Categoría de la queja, opinión o sugerencia -->
             <label for="categoria">Cuentanos lo que piensas:</label>

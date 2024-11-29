@@ -97,37 +97,52 @@ def productos():
     return render_template('Productos.html')
 
 # Ruta para enviar reclamos
-@app.route('/enviar_reclamo', methods=['POST'])
+@app.route("/enviar_reclamo", methods=["POST"])
 def enviar_reclamo():
-    usuario_id = session.get("usuario_id")
-    if not usuario_id:
-        return redirect(url_for("login"))
-
-    producto_id = request.form["producto_id"]
-    categoria = request.form["categoria"]
-    mensaje = request.form["mensaje"]
-    
     try:
-        conn = create_connection()
+        conn = create_connection()  # Conexión a la base de datos
         cursor = conn.cursor()
+
+        # Obtener datos del formulario
+        usuario_id = request.form["usuario_id"]
+        categoria_id = request.form["categoria_id"]
+        mensaje = request.form["mensaje"]
+
+        # Insertar la queja en la base de datos
         cursor.execute("""
-            INSERT INTO reclamo (usuario_id, producto_id, categoria, mensaje)
-            VALUES (%s, %s, %s, %s)
-        """, (usuario_id, producto_id, categoria, mensaje))
+            INSERT INTO reclamos (ID_Usuario, ID_Categoria, Mensaje, Fecha)
+            VALUES (%s, %s, %s, NOW())
+        """, (usuario_id, categoria_id, mensaje))
         conn.commit()
+
+        flash("Tu queja, opinión o sugerencia fue enviada exitosamente.")
+        return redirect(url_for("quejas"))
+
     except Exception as e:
-        flash("Error al enviar el reclamo: " + str(e))
-        return redirect(url_for("panel_usuario"))
+        flash(f"Error al enviar la queja: {e}")
+        return redirect(url_for("quejas"))
+    
     finally:
         close_connection(conn)
-    
-    flash("Tu reclamo fue enviado con éxito.")
-    return redirect(url_for("panel_usuario"))
-
 # Ruta para quejas
-@app.route('/quejas')
+@app.route("/quejas", methods=["GET", "POST"])
 def quejas():
-    return render_template('quejas.html')
+    try:
+        conn = create_connection()  # Conexión a la base de datos
+        cursor = conn.cursor(dictionary=True)
+        
+        # Obtener las categorías desde la base de datos
+        cursor.execute("SELECT ID_Categoria, Nombre FROM categoria")
+        categorias = cursor.fetchall()
+
+        return render_template("quejas.html", categorias=categorias)
+
+    except Exception as e:
+        flash(f"Error al cargar las categorías: {e}")
+        return render_template("quejas.html", categorias=[])
+    
+    finally:
+        close_connection(conn)
 
 # Ruta para redes sociales
 @app.route("/redessociales")
