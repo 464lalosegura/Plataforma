@@ -50,41 +50,78 @@
         button:hover {
             background-color: #0056b3;
         }
+
+        #productos_container {
+            margin-top: 20px;
+        }
+
+        #lista_productos {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        #lista_productos li {
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h2>Enviar Queja, Opinión o Sugerencia</h2>
-        <form action="/enviar_reclamo" method="POST">
-            <!-- Campo oculto para el usuario que está iniciando sesión -->
-            <input type="hidden" name="usuario_id" value="{{ session['usuario_id'] }}">
-            
-            <!-- Selección de producto dinámico -->
-           <!-- Selección de categoría dinámica -->
-<label for="categoria">Seleccione una Categoría:</label>
-<select id="categoria" name="categoria_id" class="form-select" required>
-    <option value="">Seleccione una categoría</option>
-    {% for categoria in categorias %}
-        <option value="{{ categoria['ID_Categoria'] }}">{{ categoria['Nombre'] }}</option>
-    {% endfor %}
-</select>
+        <form method="POST" action="{{ url_for('enviar_reclamo') }}">
+            <div class="mb-3">
+                <label for="categoria_id" class="form-label">Seleccionar Categoría:</label>
+                <select id="categoria_id" name="categoria_id" class="form-select" required>
+                    {% for categoria in categorias %}
+                        <option value="{{ categoria.ID_Categoria }}">{{ categoria.Nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
 
-            <!-- Categoría de la queja, opinión o sugerencia -->
-            <label for="categoria">Cuentanos lo que piensas:</label>
-            <select id="categoria" name="categoria" class="form-select" required>
-                <option value="queja">Queja</option>
-                <option value="opinion">Opinión</option>
-                <option value="sugerencia">Sugerencia</option>
-            </select>
-
-            <!-- Mensaje de la queja, opinión o sugerencia -->
-            <label for="mensaje">Escriba su mensaje:</label>
-            <textarea id="mensaje" name="mensaje" placeholder="Escriba su queja, opinión o sugerencia aquí..." required></textarea>
-
-            <button type="submit">Enviar</button>
+            <!-- Botón para cargar productos -->
+            <button type="button" id="ver_productos" class="btn btn-primary" onclick="cargarProductos()">Ver Productos</button>
+        
+            <!-- Contenedor para mostrar los productos -->
+            <div id="productos_container">
+                <h3>Productos</h3>
+                <ul id="lista_productos"></ul>
+            </div>
+        
+            <div class="mb-3">
+                <label for="mensaje" class="form-label">Mensaje:</label>
+                <textarea id="mensaje" name="mensaje" class="form-control" required></textarea>
+            </div>
+        
+            <button type="submit" class="btn btn-success">Enviar Reclamo</button>
         </form>
     </div>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <script>
+        function cargarProductos() {
+            const categoriaId = document.getElementById("categoria_id").value;
+        
+            fetch(`/productos_por_categoria?categoria_id=${categoriaId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const productosContainer = document.getElementById("lista_productos");
+                    productosContainer.innerHTML = "";  // Limpiar la lista de productos
+        
+                    if (data.productos && data.productos.length > 0) {
+                        data.productos.forEach(producto => {
+                            const li = document.createElement("li");
+                            li.textContent = `${producto.Descripcion} - Precio: $${producto.Precio} - Cantidad: ${producto.Cantidad}`;
+                            productosContainer.appendChild(li);
+                        });
+                    } else {
+                        productosContainer.innerHTML = "<li>No hay productos disponibles en esta categoría.</li>";
+                    }
+                })
+                .catch(error => {
+                    console.error("Error al cargar los productos:", error);
+                    alert("No se pudieron cargar los productos. Intenta nuevamente.");
+                });
+        }
+    </script>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
