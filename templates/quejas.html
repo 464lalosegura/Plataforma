@@ -8,7 +8,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            background-color: #e9ecef; /* Fondo gris claro */
             margin: 0;
             padding: 20px;
         }
@@ -16,7 +16,7 @@
         .container {
             width: 50%;
             margin: 0 auto;
-            background: white;
+            background: #f8f9fa; /* Fondo blanco suave */
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -26,6 +26,7 @@
             font-family: 'Arial Black', Arial, sans-serif;
             text-align: center;
             margin-bottom: 20px;
+            color: #495057; /* Texto gris oscuro */
         }
 
         textarea {
@@ -33,12 +34,12 @@
             height: 150px;
             margin-bottom: 15px;
             padding: 10px;
-            border: 1px solid #ccc;
+            border: 1px solid #ced4da; /* Borde gris claro */
             border-radius: 5px;
         }
 
         button {
-            background-color: #007bff;
+            background-color: #6c757d; /* Color gris oscuro */
             color: white;
             padding: 10px;
             border: none;
@@ -48,25 +49,39 @@
         }
 
         button:hover {
-            background-color: #0056b3;
+            background-color: #495057; /* Gris más oscuro al pasar el mouse */
         }
 
         #productos_container {
             margin-top: 20px;
         }
 
-        #lista_productos {
-            list-style-type: none;
-            padding-left: 0;
+        #lista_productos button {
+            margin: 5px 0;
+            width: 100%;
+            text-align: left;
+            background-color: #dee2e6; /* Gris muy claro */
+            color: #212529; /* Texto gris oscuro */
+            border: 1px solid #ced4da; /* Borde gris claro */
         }
 
-        #lista_productos li {
-            margin-bottom: 10px;
+        #lista_productos button.active {
+            background-color: #adb5bd; /* Gris intermedio para el seleccionado */
+            color: white;
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- Bloque para mostrar mensajes de flash -->
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="alert alert-success" role="alert">
+                    {{ messages[0] }}
+                </div>
+            {% endif %}
+        {% endwith %}
+    
         <h2>Enviar Queja, Opinión o Sugerencia</h2>
         <form method="POST" action="{{ url_for('enviar_reclamo') }}">
             <div class="mb-3">
@@ -77,16 +92,18 @@
                     {% endfor %}
                 </select>
             </div>
-
             <!-- Botón para cargar productos -->
-            <button type="button" id="ver_productos" class="btn btn-primary" onclick="cargarProductos()">Ver Productos</button>
+            <button type="button" id="ver_productos" class="btn btn-secondary" onclick="cargarProductos()">Ver Productos</button>
         
             <!-- Contenedor para mostrar los productos -->
             <div id="productos_container">
-                <h3>Productos</h3>
-                <ul id="lista_productos"></ul>
+                <h3>Selecciona un Producto</h3>
+                <div id="lista_productos"></div>
             </div>
-        
+    
+            <!-- Campo oculto para almacenar el producto seleccionado -->
+            <input type="hidden" id="producto_seleccionado" name="producto_seleccionado">
+    
             <div class="mb-3">
                 <label for="mensaje" class="form-label">Mensaje:</label>
                 <textarea id="mensaje" name="mensaje" class="form-control" required></textarea>
@@ -95,25 +112,36 @@
             <button type="submit" class="btn btn-success">Enviar Reclamo</button>
         </form>
     </div>
-
+    
     <script>
+        let productoSeleccionado = null;
+
         function cargarProductos() {
             const categoriaId = document.getElementById("categoria_id").value;
-        
+
             fetch(`/productos_por_categoria?categoria_id=${categoriaId}`)
                 .then(response => response.json())
                 .then(data => {
                     const productosContainer = document.getElementById("lista_productos");
-                    productosContainer.innerHTML = "";  // Limpiar la lista de productos
-        
+                    productosContainer.innerHTML = ""; // Limpiar la lista de productos
+
                     if (data.productos && data.productos.length > 0) {
                         data.productos.forEach(producto => {
-                            const li = document.createElement("li");
-                            li.textContent = `${producto.Descripcion} - Precio: $${producto.Precio} - Cantidad: ${producto.Cantidad}`;
-                            productosContainer.appendChild(li);
+                            const button = document.createElement("button");
+                            button.classList.add("btn", "btn-outline-secondary");
+                            button.textContent = `${producto.Descripcion} - Precio: $${producto.Precio}`;
+                            button.type = "button";
+
+                            // Si el producto ya estaba seleccionado, resalta el botón
+                            if (producto.ID_Producto === productoSeleccionado) {
+                                button.classList.add("active");
+                            }
+
+                            button.onclick = () => seleccionarProducto(producto.ID_Producto, button);
+                            productosContainer.appendChild(button);
                         });
                     } else {
-                        productosContainer.innerHTML = "<li>No hay productos disponibles en esta categoría.</li>";
+                        productosContainer.innerHTML = "<p>No hay productos disponibles en esta categoría.</p>";
                     }
                 })
                 .catch(error => {
@@ -121,6 +149,35 @@
                     alert("No se pudieron cargar los productos. Intenta nuevamente.");
                 });
         }
+
+        function seleccionarProducto(productoId, button) {
+            // Actualiza el producto seleccionado en el campo oculto
+            document.getElementById("producto_seleccionado").value = productoId;
+
+            // Desactiva todos los botones de productos
+            const botones = document.querySelectorAll("#lista_productos button");
+            botones.forEach(btn => btn.classList.remove("active"));
+
+            // Activa el botón seleccionado
+            button.classList.add("active");
+            productoSeleccionado = productoId;
+
+            alert("Producto seleccionado correctamente.");
+        }
+
+        // Validar el formulario antes de enviarlo
+        document.querySelector("form").addEventListener("submit", function (e) {
+            const productoId = document.getElementById("producto_seleccionado").value;
+            const mensaje = document.getElementById("mensaje").value;
+
+            if (!productoId) {
+                alert("Por favor, selecciona un producto antes de enviar.");
+                e.preventDefault(); // Cancela el envío del formulario
+            } else if (!mensaje.trim()) {
+                alert("Por favor, escribe un mensaje antes de enviar.");
+                e.preventDefault(); // Cancela el envío del formulario
+            }
+        });
     </script>
 
     <!-- Bootstrap JS -->

@@ -135,26 +135,28 @@ def enviar_reclamo():
         cursor = conn.cursor()
 
         # Obtener datos del formulario
-        usuario_id = request.form["usuario_id"]
-        categoria_id = request.form["categoria_id"]
-        mensaje = request.form["mensaje"]
+        usuario_id = session.get("usuario_id")  # Obteniendo el ID del usuario de la sesión
+        producto_id = request.form["producto_seleccionado"]
+        descripcion = request.form["mensaje"]
 
         # Insertar la queja en la base de datos
         cursor.execute("""
-            INSERT INTO reclamos (ID_Usuario, ID_Categoria, Mensaje, Fecha)
+            INSERT INTO reclamo (usuario_id, producto_id, descripcion, fecha)
             VALUES (%s, %s, %s, NOW())
-        """, (usuario_id, categoria_id, mensaje))
+        """, (usuario_id, producto_id, descripcion))
         conn.commit()
 
-        flash("Tu queja, opinión o sugerencia fue enviada exitosamente.")
+        # Confirmación
+        flash("Tu reclamo se ha enviado correctamente :)")
         return redirect(url_for("quejas"))
 
     except Exception as e:
-        flash(f"Error al enviar la queja: {e}")
+        flash(f"Error al enviar el reclamo: {e}")
         return redirect(url_for("quejas"))
-    
+
     finally:
         close_connection(conn)
+
 # Ruta para quejas
 @app.route("/quejas", methods=["GET", "POST"])
 def quejas():
