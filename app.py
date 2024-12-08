@@ -136,50 +136,57 @@ def panel_usuario():
 
 
 # Ruta para la página de edición
+# Ruta para la página de edición
 @app.route("/editar_usuario", methods=["GET", "POST"])
 def editar_usuario():
-    if "usuario_id" in session:  # Verifica si el usuario está logueado
+    if "usuario_id" in session:
         usuario_id = session["usuario_id"]
-
+        
+        # Conexión a la base de datos y obtención de los datos del usuario
         conn = create_connection()
         cursor = conn.cursor(dictionary=True)
-
+        
         try:
-            # Obtiene los datos del usuario desde la base de datos
             cursor.execute("SELECT Nombre, Correo FROM usuario WHERE ID_Usuario = %s", (usuario_id,))
             usuario = cursor.fetchone()
             if request.method == "POST":
-                # Si se envían datos para actualizar
+                # Aquí procesamos los datos del formulario
                 nombre = request.form["nombre"]
                 correo = request.form["correo"]
-
-                # Actualiza los datos del usuario en la base de datos
-                cursor.execute("""
-                    UPDATE usuario 
-                    SET Nombre = %s, Correo = %s
-                    WHERE ID_Usuario = %s
-                """, (nombre, correo, usuario_id))
-                conn.commit()  # Guarda los cambios en la base de datos
+                contrasena = request.form["contrasena"]
+                
+                # Actualizar la contraseña si es proporcionada
+                if contrasena:
+                    contrasena_hash = generate_password_hash(contrasena)
+                    cursor.execute("""
+                        UPDATE usuario 
+                        SET Nombre = %s, Correo = %s, Contraseña = %s
+                        WHERE ID_Usuario = %s
+                    """, (nombre, correo, contrasena_hash, usuario_id))
+                else:
+                    cursor.execute("""
+                        UPDATE usuario 
+                        SET Nombre = %s, Correo = %s
+                        WHERE ID_Usuario = %s
+                    """, (nombre, correo, usuario_id))
+                
+                conn.commit()
                 flash("Información actualizada correctamente", "success")
-                return redirect(url_for("panel_usuario"))  # Redirige al panel de usuario
-
+                return redirect(url_for("panel_usuario"))
+            
             if usuario:
-                return render_template("editar_usuario.html", usuario=usuario)  # Muestra el formulario de edición
+                return render_template("editar_usuario.html", usuario=usuario)
             else:
                 flash("Usuario no encontrado", "danger")
-                return redirect(url_for("login"))  # Si no se encuentra el usuario, redirige al login
-
+                return redirect(url_for("login"))
+        
         except Exception as e:
             flash(f"Error: {e}", "danger")
             return redirect(url_for("login"))
         finally:
             close_connection(conn)
     else:
-        return redirect(url_for("login"))  # Si no está logueado, redirige al login
-
-
-
-
+        return redirect(url_for("login"))
 
 # Ruta para guardar los cambios del usuario
 @app.route('/guardar_cambios_usuario', methods=['POST'])
@@ -189,10 +196,9 @@ def guardar_cambios_usuario():
         nombre = request.form.get('nombre')
         correo = request.form.get('correo')
         contrasena = request.form.get('contrasena')
-        tienda = request.form.get('tienda')
 
         # Validaciones básicas
-        if not nombre or not correo or not tienda:
+        if not nombre or not correo:
             flash("Por favor, completa todos los campos requeridos.", "warning")
             return redirect(url_for('editar_usuario'))
 
@@ -203,15 +209,15 @@ def guardar_cambios_usuario():
                 contrasena_hash = generate_password_hash(contrasena)
                 cursor.execute("""
                     UPDATE usuario 
-                    SET Nombre = %s, Correo = %s, Contraseña = %s, Tienda = %s 
-                    WHERE id_usuario = %s
-                """, (nombre, correo, contrasena_hash, tienda, usuario_id))
+                    SET Nombre = %s, Correo = %s, Contraseña = %s 
+                    WHERE ID_Usuario = %s
+                """, (nombre, correo, contrasena_hash, usuario_id))
             else:
                 cursor.execute("""
                     UPDATE usuario 
-                    SET Nombre = %s, Correo = %s, Tienda = %s 
-                    WHERE id_usuario = %s
-                """, (nombre, correo, tienda, usuario_id))
+                    SET Nombre = %s, Correo = %s 
+                    WHERE ID_Usuario = %s
+                """, (nombre, correo, usuario_id))
             conn.commit()
             flash("Información actualizada correctamente.", "success")
             return redirect(url_for('panel_usuario'))
