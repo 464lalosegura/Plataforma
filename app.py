@@ -77,76 +77,109 @@ def registro():
 def login():
     error = None
     if request.method == "POST":
+        # Obteniendo los datos del formulario
         usuario = request.form["correo"]
         contrasena = request.form["contrasena"]
 
         conn = create_connection()
         try:
             cursor = conn.cursor()
+            # Verificando si el usuario existe en la base de datos
             cursor.execute("SELECT * FROM usuario WHERE correo = %s", (usuario,))
-            user = cursor.fetchone()
+            user = cursor.fetchone()  # Obtiene un registro de usuario
 
-            if user and check_password_hash(user[3], contrasena):
-                session["usuario"] = user[1]  
-                session["usuario_id"] = user[0]  
-                return redirect(url_for("panel_usuario"))
+            # Verificando si la contraseña es correcta
+            if user:
+                print(f"Usuario encontrado: {user}")  # Verifica si el usuario existe
+                if check_password_hash(user[3], contrasena):  # Compara la contraseña con el hash
+                    print("Contraseña válida")
+                    session["usuario"] = user[1]  # Guarda el nombre del usuario en la sesión
+                    session["usuario_id"] = user[0]  # Guarda el ID del usuario en la sesión
+                    return redirect(url_for("panel_usuario"))  # Redirige al panel de usuario
+                else:
+                    error = "Contraseña incorrecta"  # Error en caso de que la contraseña sea incorrecta
             else:
-                error = "Usuario o contraseña incorrectos"
+                error = "Usuario no encontrado"  # Si no existe el usuario en la base de datos
+
         except Exception as e:
-            error = f"Error al iniciar sesión: {e}"
+            error = f"Error al iniciar sesión: {e}"  # Si ocurre un error al consultar la base de datos
         finally:
-            close_connection(conn)
+            close_connection(conn)  # Cerrar la conexión con la base de datos
     
+    # Renderiza el formulario de inicio de sesión con el posible error
     return render_template("login.html", error=error)
+
     
 # Ruta para el panel de usuario
 @app.route("/panelUser")
 def panel_usuario():
-    if "usuario_id" in session:
+    if "usuario_id" in session:  # Verifica si el usuario está logueado
         usuario_id = session.get("usuario_id")
         conn = create_connection()
         cursor = conn.cursor(dictionary=True)
         try:
-            cursor.execute("SELECT Nombre, Correo, Tienda FROM usuario WHERE id_usuario = %s", (usuario_id,))
-            usuario = cursor.fetchone()
+            # Obtiene los datos del usuario desde la base de datos
+            cursor.execute("SELECT Nombre, Correo FROM usuario WHERE id_usuario = %s", (usuario_id,))
+            usuario = cursor.fetchone()  # Obtiene un único registro de usuario
             if usuario:
-                return render_template("panelUser.html", usuario=usuario)
+                return render_template("panelUser.html", usuario=usuario)  # Muestra el panel del usuario
             else:
-                flash("Usuario no encontrado.", "danger")
-                return redirect(url_for("login"))
+                flash("Usuario no encontrado.", "danger")  # Si no se encuentra el usuario
+                return redirect(url_for("login"))  # Redirige a la página de login
         except Exception as e:
             flash(f"Error al obtener datos del usuario: {e}", "danger")
             return redirect(url_for("login"))
         finally:
-            close_connection(conn)
+            close_connection(conn)  # Cierra la conexión con la base de datos
     else:
-        return redirect(url_for("login"))
+        return redirect(url_for("login"))  # Si no está logueado, redirige al login
+
 
 # Ruta para la página de edición
-@app.route('/editar_usuario')
+@app.route("/editar_usuario", methods=["GET", "POST"])
 def editar_usuario():
-    # Simulación de obtener datos del usuario desde la base de datos
-    usuario = {
-        "Nombre": "Juan Pérez",
-        "Correo": "juan.perez@example.com",
-        "Tienda": "1234"
-    }
-    return render_template('editar_usuario.html', usuario=usuario)
+    if "usuario_id" in session:  # Verifica si el usuario está logueado
+        usuario_id = session["usuario_id"]
 
-@app.route('/guardar_cambios_usuario', methods=['POST'])
-def guardar_cambios_usuario():
-    nombre = request.form['nombre']
-    correo = request.form['correo']
-    contrasena = request.form['contrasena']
-    tienda = request.form['tienda']
+        conn = create_connection()
+        cursor = conn.cursor(dictionary=True)
 
-    # Aquí actualizas los datos en la base de datos
-    # Actualiza la tabla de usuarios con los nuevos datos
-    # Ejemplo:
-    # cursor.execute("UPDATE usuarios SET Nombre=%s, Correo=%s, Contraseña=%s, Tienda=%s WHERE id_usuario=%s", (nombre, correo, contrasena, tienda, id_usuario))
+        try:
+            # Obtiene los datos del usuario desde la base de datos
+            cursor.execute("SELECT Nombre, Correo FROM usuario WHERE ID_Usuario = %s", (usuario_id,))
+            usuario = cursor.fetchone()
+            if request.method == "POST":
+                # Si se envían datos para actualizar
+                nombre = request.form["nombre"]
+                correo = request.form["correo"]
 
-    flash("Información actualizada correctamente")
-    return redirect(url_for('panel_usuario'))
+                # Actualiza los datos del usuario en la base de datos
+                cursor.execute("""
+                    UPDATE usuario 
+                    SET Nombre = %s, Correo = %s
+                    WHERE ID_Usuario = %s
+                """, (nombre, correo, usuario_id))
+                conn.commit()  # Guarda los cambios en la base de datos
+                flash("Información actualizada correctamente", "success")
+                return redirect(url_for("panel_usuario"))  # Redirige al panel de usuario
+
+            if usuario:
+                return render_template("editar_usuario.html", usuario=usuario)  # Muestra el formulario de edición
+            else:
+                flash("Usuario no encontrado", "danger")
+                return redirect(url_for("login"))  # Si no se encuentra el usuario, redirige al login
+
+        except Exception as e:
+            flash(f"Error: {e}", "danger")
+            return redirect(url_for("login"))
+        finally:
+            close_connection(conn)
+    else:
+        return redirect(url_for("login"))  # Si no está logueado, redirige al login
+
+
+
+
 
 # Ruta para guardar los cambios del usuario
 @app.route('/guardar_cambios_usuario', methods=['POST'])
@@ -192,12 +225,6 @@ def guardar_cambios_usuario():
         flash("Debes iniciar sesión primero.", "warning")
         return redirect(url_for("login"))
 
-# Ruta para cerrar sesión
-@app.route("/logout")
-def logout():
-    session.pop("usuario", None)
-    session.pop("usuario_id", None)
-    return redirect(url_for("login"))
 
 
 
