@@ -102,16 +102,102 @@ def login():
 # Ruta para el panel de usuario
 @app.route("/panelUser")
 def panel_usuario():
-    if "usuario" in session:
-        # Si el usuario está logueado, muestra su panel
-        print(f"Bienvenido al panel de usuario: {session.get('usuario')}, ID de usuario: {session.get('usuario_id')}")
-        return render_template("panelUser.html", usuario=session["usuario"])
-    
-    # Si no está logueado, redirige al formulario de registro
-    return redirect(url_for("registro"))
+    if "usuario_id" in session:
+        usuario_id = session.get("usuario_id")
+        conn = create_connection()
+        cursor = conn.cursor(dictionary=True)
+        try:
+            cursor.execute("SELECT Nombre, Correo, Tienda FROM usuario WHERE id_usuario = %s", (usuario_id,))
+            usuario = cursor.fetchone()
+            if usuario:
+                return render_template("panelUser.html", usuario=usuario)
+            else:
+                flash("Usuario no encontrado.", "danger")
+                return redirect(url_for("login"))
+        except Exception as e:
+            flash(f"Error al obtener datos del usuario: {e}", "danger")
+            return redirect(url_for("login"))
+        finally:
+            close_connection(conn)
+    else:
+        return redirect(url_for("login"))
 
+# Ruta para la página de edición
+@app.route('/editar_usuario')
+def editar_usuario():
+    # Simulación de obtener datos del usuario desde la base de datos
+    usuario = {
+        "Nombre": "Juan Pérez",
+        "Correo": "juan.perez@example.com",
+        "Tienda": "1234"
+    }
+    return render_template('editar_usuario.html', usuario=usuario)
 
+@app.route('/guardar_cambios_usuario', methods=['POST'])
+def guardar_cambios_usuario():
+    nombre = request.form['nombre']
+    correo = request.form['correo']
+    contrasena = request.form['contrasena']
+    tienda = request.form['tienda']
 
+    # Aquí actualizas los datos en la base de datos
+    # Actualiza la tabla de usuarios con los nuevos datos
+    # Ejemplo:
+    # cursor.execute("UPDATE usuarios SET Nombre=%s, Correo=%s, Contraseña=%s, Tienda=%s WHERE id_usuario=%s", (nombre, correo, contrasena, tienda, id_usuario))
+
+    flash("Información actualizada correctamente")
+    return redirect(url_for('panel_usuario'))
+
+# Ruta para guardar los cambios del usuario
+@app.route('/guardar_cambios_usuario', methods=['POST'])
+def guardar_cambios_usuario():
+    if "usuario_id" in session:
+        usuario_id = session.get("usuario_id")
+        nombre = request.form.get('nombre')
+        correo = request.form.get('correo')
+        contrasena = request.form.get('contrasena')
+        tienda = request.form.get('tienda')
+
+        # Validaciones básicas
+        if not nombre or not correo or not tienda:
+            flash("Por favor, completa todos los campos requeridos.", "warning")
+            return redirect(url_for('editar_usuario'))
+
+        conn = create_connection()
+        cursor = conn.cursor()
+        try:
+            if contrasena:
+                contrasena_hash = generate_password_hash(contrasena)
+                cursor.execute("""
+                    UPDATE usuario 
+                    SET Nombre = %s, Correo = %s, Contraseña = %s, Tienda = %s 
+                    WHERE id_usuario = %s
+                """, (nombre, correo, contrasena_hash, tienda, usuario_id))
+            else:
+                cursor.execute("""
+                    UPDATE usuario 
+                    SET Nombre = %s, Correo = %s, Tienda = %s 
+                    WHERE id_usuario = %s
+                """, (nombre, correo, tienda, usuario_id))
+            conn.commit()
+            flash("Información actualizada correctamente.", "success")
+            return redirect(url_for('panel_usuario'))
+        except Exception as e:
+            conn.rollback()
+            flash(f"Error al actualizar la información: {e}", "danger")
+            return redirect(url_for('editar_usuario'))
+        finally:
+            close_connection(conn)
+    else:
+        flash("Debes iniciar sesión primero.", "warning")
+        return redirect(url_for("login"))
+
+# Ruta para cerrar sesión
+@app.route("/logout")
+def logout():
+    session.pop("usuario", None)
+    session.pop("usuario_id", None)
+    return redirect(url_for("login"))
 
 
 
