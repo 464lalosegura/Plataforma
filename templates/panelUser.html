@@ -91,8 +91,24 @@
     </style>
 </head>
 <body>
-
+    <!-- Encabezado -->
     <h1>Panel de Control - Encargado de Tiendas</h1>
+
+    <!-- Mensajes Flash -->
+    <div class="container mt-3">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Contenido del Panel -->
     <div class="container">
         <!-- Acceso a productos -->
         <div class="card">

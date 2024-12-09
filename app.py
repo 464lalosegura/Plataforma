@@ -1,12 +1,31 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, request, render_template, redirect, url_for, session, flash
 import mysql.connector
-from werkzeug.security import generate_password_hash, check_password_hash
-from db_connection import create_connection, close_connection
-from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
+from werkzeug.security import check_password_hash
+import os
 
 app = Flask(__name__)
-app.secret_key = 'supersecretkey'
-print(f"Clave secreta configurada: {app.secret_key}")
+
+# Usar una clave secreta segura para la sesión
+app.secret_key = os.urandom(24)  # Clave secreta aleatoria y segura
+
+# Configuración de la cookie de sesión
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SECURE'] = False  # Cambiar a True si usas HTTPS
+
+# Conexión a la base de datos 
+def create_connection():
+    return mysql.connector.connect(
+        host="localhost",
+        user="root", 
+        password="",  
+        database="plataforma"  
+    )
+
+def close_connection(conn):
+    if conn.is_connected():
+        conn.close()
+
+
 
 # Página principal
 @app.route("/")
@@ -75,6 +94,9 @@ def registro():
 # Ruta para la página de inicio de sesión
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    if "usuario_id" in session:  # Verifica si el usuario ya está logueado
+        return redirect(url_for("panel_usuario"))  # Redirige al panel de usuario
+
     error = None
     if request.method == "POST":
         # Obteniendo los datos del formulario
@@ -84,109 +106,87 @@ def login():
         conn = create_connection()
         try:
             cursor = conn.cursor()
-            # Verificando si el usuario existe en la base de datos
             cursor.execute("SELECT * FROM usuario WHERE correo = %s", (usuario,))
-            user = cursor.fetchone()  # Obtiene un registro de usuario
+            user = cursor.fetchone()
 
-            # Verificando si la contraseña es correcta
             if user:
-                print(f"Usuario encontrado: {user}")  # Verifica si el usuario existe
-                if check_password_hash(user[3], contrasena):  # Compara la contraseña con el hash
-                    print("Contraseña válida")
-                    session["usuario"] = user[1]  # Guarda el nombre del usuario en la sesión
-                    session["usuario_id"] = user[0]  # Guarda el ID del usuario en la sesión
+                # Verificando la contraseña
+                if check_password_hash(user[3], contrasena):
+                    session["usuario"] = user[1]  # Guarda el nombre del usuario
+                    session["usuario_id"] = user[0]  # Guarda el ID del usuario
                     return redirect(url_for("panel_usuario"))  # Redirige al panel de usuario
                 else:
-                    error = "Contraseña incorrecta"  # Error en caso de que la contraseña sea incorrecta
+                    error = "Contraseña incorrecta"
             else:
-                error = "Usuario no encontrado"  # Si no existe el usuario en la base de datos
-
+                error = "Usuario no encontrado"
         except Exception as e:
-            error = f"Error al iniciar sesión: {e}"  # Si ocurre un error al consultar la base de datos
+            error = f"Error al iniciar sesión: {e}"
         finally:
-            close_connection(conn)  # Cerrar la conexión con la base de datos
-    
-    # Renderiza el formulario de inicio de sesión con el posible error
+            close_connection(conn)
+
     return render_template("login.html", error=error)
 
-    
-# Ruta para el panel de usuario
+
 @app.route("/panelUser")
 def panel_usuario():
-    if "usuario_id" in session:  # Verifica si el usuario está logueado
-        usuario_id = session.get("usuario_id")
-        conn = create_connection()
-        cursor = conn.cursor(dictionary=True)
-        try:
-            # Obtiene los datos del usuario desde la base de datos
-            cursor.execute("SELECT Nombre, Correo FROM usuario WHERE id_usuario = %s", (usuario_id,))
-            usuario = cursor.fetchone()  # Obtiene un único registro de usuario
-            if usuario:
-                return render_template("panelUser.html", usuario=usuario)  # Muestra el panel del usuario
-            else:
-                flash("Usuario no encontrado.", "danger")  # Si no se encuentra el usuario
-                return redirect(url_for("login"))  # Redirige a la página de login
-        except Exception as e:
-            flash(f"Error al obtener datos del usuario: {e}", "danger")
+    if "usuario_id" not in session:  # Verifica si el usuario está logueado
+        flash("Debes iniciar sesión para acceder al panel de usuario.", "warning")
+        return redirect(url_for("login"))  # Redirige al login
+
+    usuario_id = session.get("usuario_id")
+    conn = create_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        cursor.execute("SELECT Nombre, Correo FROM usuario WHERE ID_Usuario = %s", (usuario_id,))
+        usuario = cursor.fetchone()
+        if usuario:
+            flash("Bienvenido a tu panel de usuario.", "success")
+            return render_template("panelUser.html", usuario=usuario)
+        else:
+            flash("Usuario no encontrado.", "danger")
             return redirect(url_for("login"))
-        finally:
-            close_connection(conn)  # Cierra la conexión con la base de datos
-    else:
-        return redirect(url_for("login"))  # Si no está logueado, redirige al login
+    except Exception as e:
+        flash(f"Error al obtener datos del usuario: {e}", "danger")
+        return redirect(url_for("login"))
+    finally:
+        close_connection(conn)
 
-
+    
 # Ruta para la página de edición
 # Ruta para la página de edición
 @app.route("/editar_usuario", methods=["GET", "POST"])
 def editar_usuario():
-    if "usuario_id" in session:
-        usuario_id = session["usuario_id"]
-        
-        # Conexión a la base de datos y obtención de los datos del usuario
-        conn = create_connection()
-        cursor = conn.cursor(dictionary=True)
-        
-        try:
+    if "usuario_id" not in session:  # Verifica si el usuario está logueado
+        flash("Debes iniciar sesión para acceder a esta página.", "warning")
+        return redirect(url_for("login"))  # Redirige al login
+
+    usuario_id = session.get("usuario_id")
+    conn = create_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        if request.method == "POST":
+            # Realiza las actualizaciones de datos
+            nuevo_nombre = request.form["nombre"]
+            nuevo_correo = request.form["correo"]
+
+            cursor.execute(
+                "UPDATE usuario SET Nombre = %s, Correo = %s WHERE ID_Usuario = %s",
+                (nuevo_nombre, nuevo_correo, usuario_id)
+            )
+            conn.commit()
+            flash("Datos actualizados correctamente.", "success")
+            return redirect(url_for("panel_usuario"))  # Redirige al panel de usuario
+        else:
+            # Si es GET, muestra los datos del usuario para editar
             cursor.execute("SELECT Nombre, Correo FROM usuario WHERE ID_Usuario = %s", (usuario_id,))
             usuario = cursor.fetchone()
-            if request.method == "POST":
-                # Aquí procesamos los datos del formulario
-                nombre = request.form["nombre"]
-                correo = request.form["correo"]
-                contrasena = request.form["contrasena"]
-                
-                # Actualizar la contraseña si es proporcionada
-                if contrasena:
-                    contrasena_hash = generate_password_hash(contrasena)
-                    cursor.execute("""
-                        UPDATE usuario 
-                        SET Nombre = %s, Correo = %s, Contraseña = %s
-                        WHERE ID_Usuario = %s
-                    """, (nombre, correo, contrasena_hash, usuario_id))
-                else:
-                    cursor.execute("""
-                        UPDATE usuario 
-                        SET Nombre = %s, Correo = %s
-                        WHERE ID_Usuario = %s
-                    """, (nombre, correo, usuario_id))
-                
-                conn.commit()
-                flash("Información actualizada correctamente", "success")
-                return redirect(url_for("panel_usuario"))
-            
-            if usuario:
-                return render_template("editar_usuario.html", usuario=usuario)
-            else:
-                flash("Usuario no encontrado", "danger")
-                return redirect(url_for("login"))
-        
-        except Exception as e:
-            flash(f"Error: {e}", "danger")
-            return redirect(url_for("login"))
-        finally:
-            close_connection(conn)
-    else:
-        return redirect(url_for("login"))
+            return render_template("editar_usuario.html", usuario=usuario)
+    except Exception as e:
+        flash(f"Error al editar usuario: {e}", "danger")
+        return redirect(url_for("panel_usuario"))
+    finally:
+        close_connection(conn)
+  # Cerrar la conexión después de completar la tarea
 
 # Ruta para guardar los cambios del usuario
 @app.route('/guardar_cambios_usuario', methods=['POST'])
@@ -339,3 +339,4 @@ def productos_por_categoria():
 
 if __name__ == "__main__":
     app.run(debug=True, host="127.0.0.1", port=5000)
+    
