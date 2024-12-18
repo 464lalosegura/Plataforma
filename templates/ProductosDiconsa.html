@@ -71,18 +71,22 @@
             <div class="product-card">
 </head>
  <body>
-
+    <form action="{{ url_for('ver_pedido') }}" method="GET" style="margin-top: 20px;">
+        <button type="submit" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+            Ver estado de mi pedido
+        </button>
+    </form>
     <div class="container my-4">
         <div class="row">
             
             <div class="col-md-6 product-card">
                 <form action="{{ url_for('ver_pedido') }}" method="POST">
-                    <input type="hidden" name="id_categoria" value="id_del_producto">
-                    <input type="hidden" name="nombre" value="Nombre del producto">
-                    <img src="{{ url_for('static', filename='imagenes/ProductosDiconsa/aceite.png') }}" alt="Aceite vegetal comestible Patrona" class="product-image">
-                    <h5>Aceite vegetal comestible "Patrona"</h5>
-                    <p class="form-control" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 8px; margin-top: 10px;">
-                        de 1 lt $35 <br>
+                     <input type="hidden" name="id_producto" value="1">  <!-- ID del producto -->
+                     <input type="hidden" name="id_categoria" value="id_del_producto">
+                <img src="{{ url_for('static', filename='imagenes/ProductosDiconsa/aceite.png') }}" alt="Aceite vegetal comestible Patrona" class="product-image">
+                <input type="number" name="cantidad" min="1" value="1" class="form-control">
+                <h5>Aceite vegetal comestible "Patrona"</h5>
+                <p>$35</p>
                     </p>
                     <button type="submit" class="btn btn-primary">Agregar al pedido</button>
                 </form>
@@ -91,6 +95,7 @@
             
             <div class="col-md-6 product-card">
                 <form action="{{ url_for('ver_pedido') }}" method="POST">
+                    <input type="hidden" name="id_producto" value="2">  <!-- ID del producto -->
                     <input type="hidden" name="id_categoria" value="id_del_producto">
                     <input type="hidden" name="nombre" value="Nombre del producto">
                     <img src="{{ url_for('static', filename='imagenes/ProductosDiconsa/agua.png') }}" alt="Agua purificada Pascual" class="product-image">
@@ -104,24 +109,16 @@
         </div>
     </div>
     
-    <div class="row">
-        <!-- Producto 1: Fila que contiene el primer producto -->
+    <div class="row"></div>
         <div class="col-md-6 product-card">
             <form action="{{ url_for('ver_pedido') }}" method="POST">
-                <!-- Campos ocultos con la información del producto -->
                 <input type="hidden" name="id_categoria" value="id_del_producto">
                 <input type="hidden" name="nombre" value="Nombre del producto">
-                
-                <!-- Imagen y nombre del producto -->
                 <img src="{{ url_for('static', filename='imagenes/ProductosDiconsa/arroz.png') }}" alt="Arroz Envasado" class="product-image">
                 <h5 class="product-name">Arroz Envasado</h5>
-                
-                <!-- Descripción y precio del producto -->
                 <p class="form-control" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 8px; margin-top: 10px;">
                     bolsa con 1kg $38
                 </p>
-                
-                <!-- Botón para agregar al pedido -->
                 <button type="submit" class="btn btn-primary">Agregar al pedido</button>
             </form>
         </div>
@@ -817,12 +814,12 @@
                         <img src="{{ url_for('static', filename='imagenes/ProductosDiconsa/soya.png') }}" alt="Soya texturizada Nutricasa" class="product-image">
                         <div class="product-name">Soya texturizada "Nutricasa"</div>
                         
-                        <!-- Descripción y precio del producto -->
+                    
                         <p class="form-control" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 8px; margin-top: 10px;">
                             330gr $15.50
                         </p>
                         
-                        <!-- Botón para agregar al pedido -->
+                       
                         <button type="submit" class="btn btn-primary">Agregar al pedido</button>
                     </form>
                 </div>
@@ -831,15 +828,15 @@
             <div class="row">
                 <div class="col-md-6 product-card">
                     <form action="{{ url_for('ver_pedido') }}" method="POST">
-                        <!-- Campos ocultos con la información del producto -->
+                   
                         <input type="hidden" name="id_categoria" value="id_del_producto">
                         <input type="hidden" name="nombre" value="Suavizante de telas 'Ensueño'">
                         
-                        <!-- Imagen y nombre del producto -->
+                       
                         <img src="{{ url_for('static', filename='imagenes/ProductosDiconsa/suavizante.png') }}" alt="Suavizante de telas Ensueño" class="product-image">
                         <div class="product-name">Suavizante de telas "Ensueño"</div>
                         
-                        <!-- Descripción y precio del producto -->
+                       
                         <p class="form-control" style="background-color: #f9f9f9; border: 
              1px solid #ddd; padding: 8px; margin-top: 10px;">
                     850ml $25.40

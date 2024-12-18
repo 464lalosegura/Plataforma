@@ -2,6 +2,8 @@ from flask import Flask, request, render_template, redirect, url_for, session, f
 import mysql.connector
 from werkzeug.security import check_password_hash
 import os
+import datetime
+import sqlite3
 
 app = Flask(__name__)
 
@@ -242,9 +244,23 @@ def logout():
     return redirect(url_for("login"))
 
 # Ruta para mostrar productos
-@app.route('/productos')
+@app.route('/productos', methods=['GET', 'POST'])
 def productos():
-    return render_template('Productos.html')
+    if request.method == 'POST':
+        id_producto = request.form['id_producto']
+        cantidad = request.form['cantidad']
+
+        # Verificar que la cantidad sea mayor que cero
+        if int(cantidad) <= 0:
+            return "La cantidad debe ser mayor que cero.", 400
+
+        # Aquí se agrega la lógica de la base de datos (como en el código original)
+        # Puedes agregar el código que maneja el pedido del producto
+
+        # Finalmente, redirige a la página de ver el pedido
+        return redirect(url_for('ver_pedido'))
+
+    return render_template('productos_diconsa.html')
 
 # Ruta para enviar reclamos
 @app.route("/enviar_reclamo", methods=["POST"])
@@ -320,22 +336,84 @@ def informacionlegal():
 def productos_diconsa():
     return render_template("ProductosDiconsa.html")
 
-@app.route("/pedido", methods=["POST"])
+@app.route("/ver_pedido", methods=["GET"])
 def ver_pedido():
-    
-    return render_template("pedido.html")
+    if "usuario_id" not in session:
+        flash("Debes iniciar sesión para ver tu pedido.", "warning")
+        return redirect(url_for("login"))
 
-#Ruta  para agregar la categoria con los productos
-# Este código se encarga de obtener los productos por categoría
-@app.route("/productos_por_categoria", methods=["GET"])
-def productos_por_categoria():
-    categoria_id = request.args.get("categoria_id")
+    usuario_id = session.get("usuario_id")
     conn = create_connection()
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM producto WHERE ID_Categoria = %s", (categoria_id,))
-    productos = cursor.fetchall()
-    conn.close()
-    return jsonify({"productos": productos})
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("""
+            SELECT p.ID_Pedido, p.Estado
+            FROM Pedido p
+            WHERE p.ID_Usuario = %s
+        """, (usuario_id,))
+        pedido = cursor.fetchone()
+
+        if pedido:
+            cursor.execute("""
+                SELECT pr.Nombre, pr.Cantidad
+                FROM Producto pr
+                JOIN Pedido_Producto pp ON pr.ID_Producto = pp.ID_Producto
+                WHERE pp.ID_Pedido = %s
+            """, (pedido['ID_Pedido'],))
+            productos = cursor.fetchall()
+        else:
+            productos = []
+
+        return render_template("ver_pedido.html", pedido=pedido, productos=productos)
+
+    except Exception as e:
+        flash(f"Error al obtener el pedido: {e}", "danger")
+        return redirect(url_for("productos"))
+    finally:
+        close_connection(conn)
+
+
+
+
+
+@app.route("/confirmar_pedido", methods=["POST"])
+def confirmar_pedido():
+    if "usuario_id" not in session:
+        flash("Debes iniciar sesión para confirmar el pedido.", "warning")
+        return redirect(url_for("login"))
+
+    usuario_id = session.get("usuario_id")
+    conn = create_connection()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("""
+            SELECT ID_Pedido
+            FROM Pedido
+            WHERE ID_Usuario = %s AND Estado = 'pendiente'
+        """, (usuario_id,))
+        pedido = cursor.fetchone()
+
+        if pedido:
+            cursor.execute("""
+                UPDATE Pedido
+                SET Estado = 'confirmado'
+                WHERE ID_Pedido = %s
+            """, (pedido['ID_Pedido'],))
+            conn.commit()
+
+            flash("Tu pedido ha sido confirmado.", "success")
+            return redirect(url_for("ver_pedido"))
+        else:
+            flash("No tienes un pedido pendiente para confirmar.", "warning")
+            return redirect(url_for("productos"))
+    except Exception as e:
+        flash(f"Error al confirmar el pedido: {e}", "danger")
+        return redirect(url_for("productos"))
+    finally:
+        close_connection(conn)
+
 
 if __name__ == "__main__":
     app.run(debug=True, host="127.0.0.1", port=5000)
